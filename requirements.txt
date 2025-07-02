@@ -1,4 +1,5 @@
 fastapi
 uvicorn
 requests
+python-multipart
 python-dotenv # Opcional, si quieres usar .env para desarrollo local
