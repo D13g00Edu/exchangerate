@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversor de Monedas</title>
+    <style>
+        /* Estilos generales del cuerpo de la página */
+        body {
+            font-family: 'Inter', sans-serif; /* Fuente Inter para una apariencia moderna */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Ocupa al menos el 100% de la altura del viewport */
+            background-color: #e0f7fa; /* Fondo azul claro suave */
+            margin: 0;
+            padding: 20px; /* Espaciado general para evitar que el contenido toque los bordes */
+            box-sizing: border-box; /* Incluye padding y border en el ancho/alto total */
+        }
+
+        /* Contenedor principal del conversor */
+        .container {
+            background-color: #ffffff; /* Fondo blanco para el contenedor */
+            padding: 30px;
+            border-radius: 12px; /* Esquinas más redondeadas */
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15); /* Sombra más pronunciada */
+            text-align: center;
+            width: 100%; /* Ancho completo en móviles */
+            max-width: 450px; /* Ancho máximo para pantallas más grandes */
+            box-sizing: border-box;
+        }
+
+        /* Título de la aplicación */
+        h1 {
+            color: #263238; /* Color oscuro para el texto */
+            margin-bottom: 30px;
+            font-size: 2em; /* Tamaño de fuente más grande */
+        }
+
+        /* Grupos de formulario (label + input/select) */
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600; /* Texto de etiqueta más grueso */
+            color: #455a64; /* Color de texto para etiquetas */
+            font-size: 0.95em;
+        }
+
+        /* Estilos para campos de entrada y select */
+        input[type="number"],
+        select {
+            width: 100%; /* Ocupa el 100% del ancho disponible */
+            padding: 12px;
+            border: 1px solid #b0bec5; /* Borde gris claro */
+            border-radius: 8px; /* Esquinas redondeadas */
+            font-size: 1.05em;
+            color: #37474f; /* Color de texto para los campos */
+            box-sizing: border-box; /* Asegura que el padding no aumente el ancho total */
+            transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Transición suave para el foco */
+        }
+
+        input[type="number"]:focus,
+        select:focus {
+            border-color: #007bff; /* Borde azul al enfocar */
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25); /* Sombra suave al enfocar */
+            outline: none; /* Elimina el contorno por defecto del navegador */
+        }
+
+        /* Estilos para el botón de conversión */
+        button {
+            background-color: #007bff; /* Azul primario */
+            color: white;
+            padding: 14px 25px;
+            border: none;
+            border-radius: 8px; /* Esquinas redondeadas */
+            cursor: pointer;
+            font-size: 1.15em;
+            font-weight: 600;
+            margin-top: 25px;
+            transition: background-color 0.3s ease, transform 0.2s ease; /* Transiciones suaves */
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2); /* Sombra para el botón */
+        }
+
+        button:hover {
+            background-color: #0056b3; /* Azul más oscuro al pasar el ratón */
+            transform: translateY(-2px); /* Pequeño efecto de elevación */
+        }
+
+        button:active {
+            transform: translateY(0); /* Vuelve a la posición original al hacer clic */
+            box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3); /* Sombra más pequeña al hacer clic */
+        }
+
+        /* Estilos para la caja de resultados */
+        .result-box {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #28a745; /* Borde verde para éxito */
+            background-color: #e6ffe6; /* Fondo verde claro */
+            color: #1a662e; /* Texto verde oscuro */
+            border-radius: 8px;
+            text-align: left;
+            font-size: 1.1em;
+            font-weight: 500;
+            display: none; /* Oculto por defecto, se muestra con JS */
+        }
+
+        /* Estilos para la caja de errores */
+        .error-box {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #dc3545; /* Borde rojo para error */
+            background-color: #ffe6e6; /* Fondo rojo claro */
+            color: #8c1a25; /* Texto rojo oscuro */
+            border-radius: 8px;
+            text-align: left;
+            font-size: 1.1em;
+            font-weight: 500;
+            display: none; /* Oculto por defecto, se muestra con JS */
+        }
+
+        /* Media Queries para responsividad */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+                margin-bottom: 20px;
+            }
+
+            input[type="number"],
+            select,
+            button {
+                font-size: 1em;
+                padding: 10px;
+            }
+
+            .result-box,
+            .error-box {
+                padding: 15px;
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Conversor de Monedas</h1>
+        
+        <div class="form-group">
+            <label for="amount">Cantidad:</label>
+            <input type="number" id="amount" value="1.00" step="0.01" aria-label="Cantidad a convertir">
+        </div>
+        
+        <div class="form-group">
+            <label for="fromCurrency">De:</label>
+            <select id="fromCurrency" aria-label="Moneda de origen">
+                <!-- Opciones de monedas predefinidas. Puedes expandir esta lista. -->
+                <option value="USD">USD - Dólar Estadounidense</option>
+                <option value="EUR">EUR - Euro</option>
+                <option value="GBP">GBP - Libra Esterlina</option>
+                <option value="JPY">JPY - Yen Japonés</option>
+                <option value="PEN" selected>PEN - Sol P    eruano</option>
+                <option value="MXN">MXN - Peso Mexicano</option>
+                <option value="CLP">CLP - Peso Chileno</option>
+                <option value="ARS">ARS - Peso Argentino</option>
+                <option value="COP">COP - Peso Colombiano</option>
+                <option value="BRL">BRL - Real Brasileño</option>
+                <option value="CAD">CAD - Dólar Canadiense</option>
+                <option value="AUD">AUD - Dólar Australiano</option>
+                <option value="CHF">CHF - Franco Suizo</option>
+                <option value="CNY">CNY - Yuan Chino</option>
+                <option value="INR">INR - Rupia India</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="toCurrency">A:</label>
+            <select id="toCurrency" aria-label="Moneda de destino">
+                <!-- Opciones de monedas predefinidas. Puedes expandir esta lista. -->
+                <option value="USD" selected>USD - Dólar Estadounidense</option>
+                <option value="EUR">EUR - Euro</option>
+                <option value="GBP">GBP - Libra Esterlina</option>
+                <option value="JPY">JPY - Yen Japonés</option>
+                <option value="PEN">PEN - Sol Peruano</option>
+                <option value="MXN">MXN - Peso Mexicano</option>
+                <option value="CLP">CLP - Peso Chileno</option>
+                <option value="ARS">ARS - Peso Argentino</option>
+                <option value="COP">COP - Peso Colombiano</option>
+                <option value="BRL">BRL - Real Brasileño</option>
+                <option value="CAD">CAD - Dólar Canadiense</option>
+                <option value="AUD">AUD - Dólar Australiano</option>
+                <option value="CHF">CHF - Franco Suizo</option>
+                <option value="CNY">CNY - Yuan Chino</option>
+                <option value="INR">INR - Rupia India</option>
+            </select>
+        </div>
+        
+        <button id="convertBtn">Convertir</button>
+        
+        <!-- Contenedor para mostrar el resultado de la conversión -->
+        <div id="result" class="result-box" aria-live="polite">
+            <!-- El resultado se insertará aquí mediante JavaScript -->
+        </div>
+        
+        <!-- Contenedor para mostrar mensajes de error -->
+        <div id="error" class="error-box" aria-live="assertive">
+            <!-- Los errores se insertarán aquí mediante JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Obtener referencias a los elementos del DOM
+            const amountInput = document.getElementById('amount');
+            const fromCurrencySelect = document.getElementById('fromCurrency');
+            const toCurrencySelect = document.getElementById('toCurrency');
+            const convertBtn = document.getElementById('convertBtn');
+            const resultDiv = document.getElementById('result');
+            const errorDiv = document.getElementById('error');
+
+            /**
+             * Muestra el resultado de la conversión en la interfaz.
+             * Oculta cualquier mensaje de error previo.
+             * @param {object} data - Objeto con los datos de la conversión (amount, from_currency, to_currency, rate, converted_amount).
+             */
+            function showResult(data) {
+                errorDiv.style.display = 'none'; // Oculta la caja de errores
+                resultDiv.style.display = 'block'; // Muestra la caja de resultados
+                resultDiv.innerHTML = `
+                    <strong>${data.amount.toFixed(2)} ${data.from_currency}</strong> es igual a 
+                    <strong>${data.converted_amount.toFixed(2)} ${data.to_currency}</strong>
+                    <br>
+                    <small>(1 ${data.from_currency} = ${data.rate.toFixed(4)} ${data.to_currency})</small>
+                `;
+            }
+
+            /**
+             * Muestra un mensaje de error en la interfaz.
+             * Oculta cualquier resultado previo.
+             * @param {string} message - El mensaje de error a mostrar.
+             */
+            function showError(message) {
+                resultDiv.style.display = 'none'; // Oculta la caja de resultados
+                errorDiv.style.display = 'block'; // Muestra la caja de errores
+                errorDiv.textContent = `Error: ${message}`;
+            }
+
+            // Agrega un 'event listener' al botón de conversión
+            convertBtn.addEventListener('click', async () => {
+                // Obtiene los valores actuales de los campos de entrada y selección
+                const amount = parseFloat(amountInput.value);
+                const fromCurrency = fromCurrencySelect.value;
+                const toCurrency = toCurrencySelect.value;
+
+                // Validaciones básicas de entrada
+                if (isNaN(amount) || amount <= 0) {
+                    showError("Por favor, introduce una cantidad válida y positiva.");
+                    return; // Detiene la ejecución si la entrada es inválida
+                }
+
+                // Si las monedas son las mismas, no es necesario llamar a la API
+                if (fromCurrency === toCurrency) {
+                    showResult({
+                        amount: amount,
+                        from_currency: fromCurrency,
+                        to_currency: toCurrency,
+                        rate: 1, // La tasa es 1 si las monedas son iguales
+                        converted_amount: amount
+                    });
+                    return;
+                }
+
+                try {
+                    // Realiza una petición POST a tu API de FastAPI
+                    // Asegúrate de que esta URL coincida con la dirección donde corre tu backend FastAPI
+                    const response = await fetch('http://127.0.0.1:8000/convert', {
+                        method: 'POST',
+                        headers: {
+                            // Importante: 'Content-Type' para enviar datos de formulario
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        // Convierte los datos del formulario a un formato URL-encoded
+                        body: new URLSearchParams({
+                            amount: amount,
+                            from_currency: fromCurrency,
+                            to_currency: toCurrency
+                        })
+                    });
+
+                    // Parsea la respuesta JSON del servidor
+                    const data = await response.json();
+
+                    // Comprueba si la respuesta contiene un error
+                    if (data.error) {
+                        showError(data.error);
+                    } else {
+                        showResult(data);
+                    }
+
+                } catch (error) {
+                    // Captura errores de red o cualquier otro error durante la petición
+                    console.error('Error al realizar la conversión:', error);
+                    showError('No se pudo conectar con el servidor. Asegúrate de que el backend de FastAPI esté corriendo en http://127.0.0.1:8000.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

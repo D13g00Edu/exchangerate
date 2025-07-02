@@ -1,0 +1,4 @@
+fastapi
+uvicorn
+requests
+python-dotenv # Opcional, si quieres usar .env para desarrollo local
