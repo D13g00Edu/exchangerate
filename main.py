@@ -15,21 +15,21 @@ app = FastAPI(
 # Permite que el frontend (abierto desde el sistema de archivos o cualquier origen)
 # pueda hacer peticiones a este backend.
 # En un entorno de producción, es recomendable restringir origins a dominios específicos.
-#origins = [
+origins = [
 #    "http://localhost",
-#    "http://localhost:8000",
+     "https://d13g00edu.github.io"
 #    "http://127.0.0.1",
 #    "http://127.0.0.1:8000",
 #    "null" # Permite solicitudes cuando el HTML se abre directamente desde el sistema de archivos
-#]
+]
 
-#app.add_middleware(
-#    CORSMiddleware,
-#    allow_origins=origins, # Lista de orígenes permitidos
-#    allow_credentials=True, # Permite cookies, encabezados de autorización, etc.
-#    allow_methods=["*"], # Permite todos los métodos (GET, POST, PUT, DELETE, etc.)
-#    allow_headers=["*"], # Permite todos los encabezados
-#)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins, # Lista de orígenes permitidos
+    allow_credentials=True, # Permite cookies, encabezados de autorización, etc.
+    allow_methods=["POST"], # Permite todos los métodos (GET, POST, PUT, DELETE, etc.)
+    allow_headers=["*"], # Permite todos los encabezados
+)
 
 # --- Configuración de la API de Tasas de Cambio ---
 # Lee la clave API de una variable de entorno llamada "EXCHANGE_RATE_API_KEY".
